@@ -2,7 +2,7 @@
 
 KMOD=	run_mtfw
 FIRMWS=	run_mt.fw:run_mtfw:1
-SYSDIR=/home/freebsd/code/freebsd/sys
+SYSDIR=/home/tom/code/mt76u/src/sys
 
 CLEANFILES=	run_mt.fw
 
