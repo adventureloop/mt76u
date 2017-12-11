@@ -1383,8 +1383,8 @@ run_load_mt_microcode(struct run_softc *sc)
 		device_printf(sc->sc_dev, "\twriting as: %x\n", tmp);
 		run_write(sc, USB_DMA_CFG, tmp);
 
-		run_read(sc, USB_DMA_CFG, &tmp);
-		device_printf(sc->sc_dev, "\treads as: %x\n", tmp);
+	//	run_read(sc, USB_DMA_CFG, &tmp);
+	//	device_printf(sc->sc_dev, "\treads as: %x\n", tmp);
 
 		run_read(sc, COM_REG0, &mac_value);
 		if ((mac_value & 0x01) == 0x01) {
@@ -1393,6 +1393,9 @@ run_load_mt_microcode(struct run_softc *sc)
 			goto fail;
 		}
 		device_printf(sc->sc_dev, "mcu says it is ready\n");
+
+		run_reset(sc);
+		run_delay(sc, 5);
 
 		/* Enable FCE */
 		run_write(sc, FCE_PSE_CTRL, 0x01);
