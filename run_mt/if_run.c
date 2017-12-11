@@ -1393,9 +1393,10 @@ run_load_mt_microcode(struct run_softc *sc)
 			goto fail;
 		}
 		device_printf(sc->sc_dev, "mcu says it is ready\n");
+		device_printf(sc->sc_dev, "resetting...\n");
 
 		run_reset(sc);
-		run_delay(sc, 5);
+		run_delay(sc, 10);
 
 		/* Enable FCE */
 		run_write(sc, FCE_PSE_CTRL, 0x01);
