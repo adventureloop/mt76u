@@ -1458,8 +1458,10 @@ run_load_mt_microcode(struct run_softc *sc)
 			//xfer_hdr |= BIT(30) | bit(
 			*xfer_hdr |= 0x40000000 | 0x10000000 | htole16(write_size);
 
-			memcpy(data + 4, __DECONST(uint8_t *, base), write_size);
-			bzero(data + 4 + write_size, 4);
+			//memcpy(data + 4, __DECONST(uint8_t *, base), write_size);
+			//bzero(data + 4 + write_size, 4);
+			memcpy(data, __DECONST(uint8_t *, base), write_size);
+			bzero(data + write_size, 4);
 
 			printf("ilm chunk hdr:\n\t%D\n\t%D\n", data, " ", data+16, " ");
 
