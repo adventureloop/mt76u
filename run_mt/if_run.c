@@ -1307,6 +1307,11 @@ run_load_mt_microcode(struct run_softc *sc)
 	device_printf(sc->sc_dev, "dlm length: %d\n", fw_hdr.dlm_len);
 	device_printf(sc->sc_dev, "build time: %.16s\n", fw_hdr.build_time);
 
+
+	/*
+	 * firmware image is header + interrupt vector table + ilm + dlm
+	 * 				   32 bytes + 64 bytes               +  x  +  y
+	 */
 	fw_base = fw->data;
 	base = fw_base + 32 + 64;
 
@@ -1458,8 +1463,8 @@ run_load_mt_microcode(struct run_softc *sc)
 			low = (cur_len & 0xFFFF);
 			high = (cur_len & 0xFFFF0000) >> 16;
 
-			run_write(sc, low, 0x230);
-			run_write(sc, high, 0x232);
+			run_write(sc, 0x230, low);
+			run_write(sc, 0x232, high);
 
 			//pad write_size out to % 4
 			while(write_size%4 != 0)
@@ -1468,8 +1473,8 @@ run_load_mt_microcode(struct run_softc *sc)
 			low = ((write_size << 16) & 0xFFFF);	//I can't see why this isn't always 0
 			high = ((write_size << 16) & 0xFFFF0000) >> 16;
 
-			run_write(sc, low, 0x234);
-			run_write(sc, high, 0x236);
+			run_write(sc, 0x234, low);
+			run_write(sc, 0x236, high);
 
 			cur_len += write_size;
 //bulk transfer
