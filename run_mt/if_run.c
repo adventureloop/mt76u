@@ -378,6 +378,7 @@ static int	run_write_2(struct run_softc *, uint16_t, uint16_t);
 static int	run_write(struct run_softc *, uint16_t, uint32_t);
 static int	run_write_region_1(struct run_softc *, uint16_t,
 		    const uint8_t *, int);
+static int run_write_vendor(struct run_softc *, uint16_t , uint16_t );
 static int	run_set_region_4(struct run_softc *, uint16_t, uint32_t, int);
 static int	run_efuse_read(struct run_softc *, uint16_t, uint16_t *, int);
 static int	run_efuse_read_2(struct run_softc *, uint16_t, uint16_t *);
@@ -1343,6 +1344,8 @@ run_load_mt_microcode(struct run_softc *sc)
 
 #define MT_USB_DMA_CFG_UDMA_TX_WL_DROP	0x0100
 
+#define MT76x0U_FCE_VENDOR_WRITE 0x42
+
 		uint32_t cur_len = 0;
 		uint32_t write_size = 0;
 		uint32_t write_max = 0;
@@ -1463,8 +1466,10 @@ run_load_mt_microcode(struct run_softc *sc)
 			low = (cur_len & 0xFFFF);
 			high = (cur_len & 0xFFFF0000) >> 16;
 
-			run_write(sc, 0x230, low);
-			run_write(sc, 0x232, high);
+			//run_write(sc, 0x230, low);
+			//run_write(sc, 0x232, high);
+			run_write_vendor(sc, 0x230, low);
+			run_write_vendor(sc, 0x232, high);
 
 			//pad write_size out to % 4
 			while(write_size%4 != 0)
@@ -1473,8 +1478,10 @@ run_load_mt_microcode(struct run_softc *sc)
 			low = ((write_size << 16) & 0xFFFF);	//I can't see why this isn't always 0
 			high = ((write_size << 16) & 0xFFFF0000) >> 16;
 
-			run_write(sc, 0x234, low);
-			run_write(sc, 0x236, high);
+			//run_write(sc, 0x234, low);
+			//run_write(sc, 0x236, high);
+			run_write_vendor(sc, 0x234, low);
+			run_write_vendor(sc, 0x236, high);
 
 			cur_len += write_size;
 //bulk transfer
@@ -1776,6 +1783,20 @@ run_write_4(struct run_softc *sc, uint16_t reg, uint16_t val1, uint16_t val2)
 
 	//return (run_do_request(sc, &req, NULL));
 	return (run_do_request(sc, req, NULL));
+}
+
+static int
+run_write_vendor(struct run_softc *sc, uint16_t reg, uint16_t val)
+{
+	usb_device_request_t req;
+
+	req.bmRequestType = UT_WRITE_VENDOR_DEVICE;
+	req.bRequest = MT76x0U_FCE_VENDOR_WRITE;
+	USETW(req.wValue, val);
+	USETW(req.wIndex, reg);
+	USETW(req.wLength, 0);
+
+	return (run_do_request(sc, &req, NULL));
 }
 
 static int
